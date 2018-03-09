@@ -62,7 +62,7 @@ class ReportScoring {
       const categoryScore = ReportScoring.arithmeticMean(scores);
       // mutate config.categories[].score
       category.score = categoryScore;
-    };
+    }
   }
 }
 

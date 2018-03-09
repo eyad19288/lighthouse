@@ -151,7 +151,7 @@ class CriticalRequestChains extends Audit {
 
       return {
         rawValue: chainCount === 0,
-        displayValue: `${Util.formatNumber(chainCount)} chains found`,
+        displayValue: chainCount ? `${Util.formatNumber(chainCount)} chains found`: '',
         extendedInfo: {
           value: {
             chains: flattenedChains,

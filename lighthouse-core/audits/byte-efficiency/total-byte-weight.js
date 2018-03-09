@@ -27,7 +27,6 @@ class TotalByteWeight extends ByteEfficiencyAudit {
         'Large network payloads cost users real money and are highly correlated with ' +
         'long load times. [Learn ' +
         'more](https://developers.google.com/web/tools/lighthouse/audits/network-payloads).',
-      scoreDisplayMode: ByteEfficiencyAudit.SCORING_MODES.NUMERIC,
       requiredArtifacts: ['devtoolsLogs'],
     };
   }

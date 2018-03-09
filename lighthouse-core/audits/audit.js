@@ -130,7 +130,7 @@ class Audit {
     return {
       score,
       scoreDisplayMode,
-      informative
+      informative,
     };
   }
 

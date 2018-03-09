@@ -51,11 +51,8 @@ class ReportScoring {
         // will still be included in the final report json and displayed in the report as
         // "Not Applicable".
         if (result.notApplicable) {
-          result.score = 1;
           audit.weight = 0;
-          result.informative = true;
         }
-        result.score = clampTo2Decimals(result.score);
       });
 
       const scores = category.audits.map(audit => ({

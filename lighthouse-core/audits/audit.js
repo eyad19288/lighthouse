@@ -10,6 +10,13 @@ const statistics = require('../lib/statistics');
 
 const DEFAULT_PASS = 'defaultPass';
 
+/**
+ * Clamp figure to 2 decimal places
+ * @param {number} val
+ * @return {number}
+ */
+const clampTo2Decimals = val => Math.round(val * 100) / 100;
+
 class Audit {
   /**
    * @return {!string}
@@ -97,29 +104,33 @@ class Audit {
   /**
    * @param {!Audit} audit
    * @param {!AuditResult} result
-   * @return {{score: number, scoreDisplayMode: string}}
+   * @return {{score: number, scoreDisplayMode: string, informative: boolean}}
    */
   static _normalizeAuditScore(audit, result) {
     let score = typeof result.score === 'undefined' ? result.rawValue : result.score;
+    let informative;
 
     if (typeof score === 'boolean' || score === null) {
       score = score ? 1 : 0;
+    } else {
+      score = clampTo2Decimals(score);
     }
 
-    if (!Number.isFinite(score)) {
-      throw new Error(`Invalid score: ${score}`);
+    // If the audit was determined to not apply to the page, we'll reset it as informative only
+    if (result.notApplicable) {
+      score = 1;
+      informative = true;
     }
 
-
-    if (score > 1) {
-      throw new Error(`Audit score for ${audit.meta.name} is > 1`);
-    }
+    if (!Number.isFinite(score)) throw new Error(`Invalid score: ${score}`);
+    if (score > 1) throw new Error(`Audit score for ${audit.meta.name} is > 1`);
 
     const scoreDisplayMode = audit.meta.scoreDisplayMode || Audit.SCORING_MODES.BINARY;
 
     return {
       score,
       scoreDisplayMode,
+      informative
     };
   }
 
@@ -133,7 +144,7 @@ class Audit {
       throw new Error('generateAuditResult requires a rawValue');
     }
 
-    const {score, scoreDisplayMode} = Audit._normalizeAuditScore(audit, result);
+    const {score, scoreDisplayMode, informative} = Audit._normalizeAuditScore(audit, result);
 
     const displayValue = result.displayValue ? `${result.displayValue}` : '';
 
@@ -152,7 +163,7 @@ class Audit {
       debugString: result.debugString,
       extendedInfo: result.extendedInfo,
       scoreDisplayMode,
-      informative: audit.meta.informative,
+      informative: audit.meta.informative || informative,
       manual: audit.meta.manual,
       notApplicable: result.notApplicable,
       name: audit.meta.name,

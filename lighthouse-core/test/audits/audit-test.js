@@ -59,7 +59,7 @@ describe('Audit', () => {
     it('throws if an audit returns a score that\'s not a number', () => {
       const re = /Invalid score/;
       assert.throws(_ => Audit._normalizeAuditScore(B, {rawValue: true, score: NaN}), re);
-      assert.throws(_ => Audit._normalizeAuditScore(B, {rawValue: true, score: '50'}), re);
+      assert.throws(_ => Audit._normalizeAuditScore(B, {rawValue: true, score: '50'}), /is > 1/);
     });
   });
 
@@ -83,5 +83,12 @@ describe('Audit', () => {
       assert.equal(auditResult.score, 0);
       assert.equal(auditResult.description, 'Failing');
     });
+  });
+
+  it('sets state of non-applicable audits', () => {
+    const providedResult = {rawValue: true, notApplicable: true};
+    const result = Audit.generateAuditResult(B, providedResult);
+    assert.equal(result.score, 1);
+    assert.equal(result.informative, true);
   });
 });
